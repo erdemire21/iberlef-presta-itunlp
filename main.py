@@ -14,21 +14,6 @@ import pandas as pd
 import logging
 import traceback
 
-# Setup error logging
-MAIN_LLM_ENV = os.environ.get("MAIN_LLM", "default")
-# sanitize MAIN_LLM so that any slashes become underscores
-sanitized_name = re.sub(r"[\\/]", "_", MAIN_LLM_ENV)
-logs_dir = "error_logs"
-os.makedirs(logs_dir, exist_ok=True)
-log_file = os.path.join(logs_dir, f"{sanitized_name}.log")
-
-logger = logging.getLogger("error_logger")
-handler = logging.FileHandler(log_file)
-formatter = logging.Formatter("%(asctime)s %(threadName)s %(levelname)s %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
-
 
 def classify_error(exc):
     """Classify an exception into syntax, logic, data-type, or other."""
@@ -109,12 +94,6 @@ def process_question(question_data, schemas, dataset_folder_path, max_retries=1)
                     "code": modified_code
                 })
 
-                # log to the shared error log
-                logger.error(
-                    "Question: %s | Iteration: %d | Type: %s | Exception: %s | Message: %s | Code: %s",
-                    MAIN_QUESTION, retries, category, type(exec_error).__name__, str(exec_error), modified_code
-                )
-
                 # ------------ keep a concise record for the next LLM call ---------
                 # Use original code (without path modifications) for error reporting to LLM
                 previous_attempts.append(
@@ -169,10 +148,6 @@ def process_question(question_data, schemas, dataset_folder_path, max_retries=1)
             "traceback": tb,
             "code": last_code
         })
-        logger.error(
-            "Question: %s | Top-level Exception: %s | Message: %s | Code: %s",
-            question_data.get('question'), type(e).__name__, str(e), last_code
-        )
         question_data['pandas_code'] = str(e)
         return question_data
 
@@ -386,6 +361,3 @@ if __name__ == "__main__":
 
     # Run the pipeline with 1 retry attempt and default dataset folder path
     run_pipeline(SCHEMA_PATH, QA_PATH, OUTPUT_PATH, SAMPLE_OUTPUT_PATH, max_retries=2, dataset_folder_path=DATASET_FOLDER_PATH)
-
-    # Just log the location without displaying contents
-    print(f"\nError log saved to: {log_file}")

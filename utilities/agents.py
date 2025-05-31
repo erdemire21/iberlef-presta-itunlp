@@ -74,7 +74,7 @@ def get_pandas_code(
     So the outputs have to be native python
 
     '''
-
+    # For GPT o models, this instruction is needed as they tend to generate overly complex code
     if MAIN_LLM.startswith("o"):
         instructions += '''
     Generate the *simplest possible* pandas code that correctly answers the question. Avoid unnecessary complexity, helper functions, or overly defensive programming unless strictly required by the question's logic. Prefer direct pandas operations.
