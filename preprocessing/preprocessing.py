@@ -12,6 +12,28 @@ current_file_directory = os.path.dirname(os.path.abspath(__file__))
 # Change the current working directory to the directory of the current file
 os.chdir(current_file_directory)
 
+def convert_blindtest_to_qa():
+    """
+    Converts the iberlef_blindtest.csv file to all_qa.json format.
+    The CSV file should have 'question' and 'dataset' columns.
+    Returns a list of dictionaries with these columns as keys.
+    """
+    csv_path = '../competition/iberlef_blindtest.csv'
+    json_path = '../competition/all_qa.json'
+    
+    # Read the CSV file
+    df = pd.read_csv(csv_path)
+    
+    # Convert DataFrame to list of dictionaries
+    qa_list = df.to_dict(orient='records')
+    
+    # Save to JSON file
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(qa_list, f, ensure_ascii=False, indent=2)
+    
+    print(f"Converted {csv_path} to {json_path}")
+    return qa_list
+
 def load_table(name):
     """Load the full parquet table for a given dataset."""
     return pd.read_parquet(f"../competition/{name}.parquet")
@@ -123,6 +145,11 @@ def get_column_unique_values_summary_string(df):
 
 
 def main(test_qa_path, output_root, all_datasets_dir, schema_output_path, qa_json_output_path):
+    # First convert the blindtest CSV to JSON if needed
+    if os.path.exists('../competition/iberlef_blindtest.csv'):
+        print("Converting blindtest CSV to JSON format...")
+        convert_blindtest_to_qa()
+    
     # Step 1: Fixing and Creating Datasets 
     print("Step 1: Processing datasets and creating parquet files...")
     # Read the test_qa file to get dataset names

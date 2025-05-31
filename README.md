@@ -36,13 +36,10 @@ The project pipeline is designed to run in three sequential steps:
 
      ```
      competition
-     ├── dataset1
-     │   ├── all.parquet
-     │   ├── sample.parquet
-     ├── dataset2
-     │   ├── all.parquet
-     │   ├── sample.parquet
-     ├── test_qa.csv
+     ├── dataset1.parquet
+     ├── dataset2.parquet
+     ├── dataset3.parquet
+     └── iberlef_blindtest.csv
      ```
 
 2. **Main Pipeline**:
