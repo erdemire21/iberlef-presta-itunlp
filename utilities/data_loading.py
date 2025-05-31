@@ -10,4 +10,4 @@ def load_schemas(schema_path):
 def load_questions(qa_path):
     """Load the questions from file."""
     with open(qa_path, encoding='utf-8') as f:
-        return json.load(f)[:5]
+        return json.load(f)
